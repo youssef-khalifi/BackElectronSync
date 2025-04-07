@@ -35,6 +35,7 @@ public class SyncController : ControllerBase
     {
         var products = await _context.Products
             .FromSqlRaw("SELECT * FROM products WHERE isSync = 0 ")
+            .IgnoreQueryFilters()
             .ToListAsync();
 
         return Ok(products);
@@ -61,7 +62,8 @@ public class SyncController : ControllerBase
     [HttpPost("mark")]
     public async Task<IActionResult> sync([FromBody] Sync request)
     {
-        var product = await _context.Products.FirstOrDefaultAsync(p => p.SyncId == request.SyncId);
+        var product = await _context.Products
+            .IgnoreQueryFilters().FirstOrDefaultAsync(p => p.SyncId == request.SyncId);
 
         if (product == null)
         {
@@ -77,6 +79,8 @@ public class SyncController : ControllerBase
         
         
     }
+
+   
 
 
 }
